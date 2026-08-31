@@ -79,7 +79,6 @@ fn main() {
                     if is_pt_in_circle(mouse_pos.clone(), circle_pos_arr[i].clone(), 10.0) {
                         circle_pos_arr[i] = mouse_pos.clone();
                         selected_circle = i as i32;
-                        println!("{}, {}", circle_pos_arr[i][0], circle_pos_arr[i][1])
                     }
                 }
             }
@@ -147,12 +146,15 @@ fn is_pt_in_circle(pt: Vec<f32>, circle_pos_arr: Vec<f32>, radius: f32) -> bool 
 
 fn get_pt_of_nth_degree_bezier(t: &f32, arr_pts: &Vec<Vec<f32>>) -> Vec<f32> {
     let mut v_return = vec![0.0, 0.0];
-    let n = arr_pts.len();
+    let n = arr_pts.len() - 1;
 
-    for i in 0..n {
-        v_return[0] += binomial_coefficient(n as u64, i as u64) as f32 * (1.0 - t).powf((n - i as usize) as f32) * t.powf(i as f32) * arr_pts[i][0];
-        v_return[1] += binomial_coefficient(n as u64, i as u64) as f32 * (1.0 - t).powf((n - i as usize) as f32) * t.powf(i as f32) * arr_pts[i][1];
-    };
+    for i in 0..arr_pts.len() {
+        let basis = binomial_coefficient(n as u64, i as u64) as f32
+            * (1.0 - t).powf((n - i) as f32)
+            * t.powf(i as f32);
+        v_return[0] += basis * arr_pts[i][0];
+        v_return[1] += basis * arr_pts[i][1];
+    }
 
     return v_return
 }
