@@ -26,16 +26,19 @@ fn main() {
     let mut mouse_pos: Vec<f32> = vec![0.0, 0.0];
     
     // Define the color (Format: 0x00RRGGBB)
-    let red_color = 0x00FF0000; 
-    let green_color = 0x0000FF00; 
+    let red_color = 0x00FF0000;
+    let green_color = 0x0000FF00;
+    let blue_color = 0x000000FF;
+    let light_grey_colour = 0x00888888;
 
     // Define the positions of the four control points for the Bezier curve
-    let mut circle_pos_arr: Vec<Vec<f32>> = vec![vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0]];
+    let mut circle_pos_arr: Vec<Vec<f32>> = vec![vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0]];
 
     let mut selected_circle: i32 = -1;
 
     // Bezier curve resolution
-    let bezier_resolution = 2000;
+    let bezier_resolution = 600;
+    let control_line_res = 200;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         // for i in buffer.iter_mut() {
@@ -52,6 +55,28 @@ fn main() {
         // resets the buffer to black
         buffer = vec![0; WIDTH * HEIGHT];
 
+
+        // Draw lines between control points
+        for i in 1..circle_pos_arr.len() {
+            let mut vec_pt: Vec<f32>;
+            let mut t: f32;
+
+            for j in 0..control_line_res {
+                t = j as f32/control_line_res as f32;
+
+                vec_pt = get_pt_of_nth_degree_bezier(&t, &vec![circle_pos_arr[i-1].clone(), circle_pos_arr[i].clone()]);
+
+                x = vec_pt[0] as usize;
+                y = vec_pt[1] as usize;
+
+                if x < WIDTH && y < HEIGHT {
+                    let index = (y * WIDTH) + x;
+                    buffer[index] = light_grey_colour;
+                }
+            }
+        }
+
+
         let mut vec_pt: Vec<f32>;
         let mut t: f32;
 
@@ -63,7 +88,6 @@ fn main() {
 
             x = vec_pt[0] as usize;
             y = vec_pt[1] as usize;
-
 
             if x < WIDTH && y < HEIGHT {
                 let index = (y * WIDTH) + x;
@@ -103,7 +127,11 @@ fn main() {
 
                 if x < WIDTH && y < HEIGHT {
                     let index = (y * WIDTH) + x;
-                    buffer[index] = green_color;
+                    if i == 0 || i == circle_pos_arr.len() - 1 {
+                        buffer[index] = green_color;
+                    } else {
+                        buffer[index] = blue_color;
+                    }
                 }
             }
         }
