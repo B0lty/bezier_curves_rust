@@ -1,4 +1,6 @@
 use minifb::{Key, Window, WindowOptions, MouseMode, MouseButton};
+use crate::assets::font;
+pub mod assets;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
@@ -30,6 +32,7 @@ fn main() {
     let green_color = 0x0000FF00;
     let blue_color = 0x000000FF;
     let light_grey_colour = 0x00888888;
+    let black_colour = 0x00000000;
 
     // Define the positions of the four control points for the Bezier curve
     let mut circle_pos_arr: Vec<Vec<f32>> = vec![vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0]];
@@ -135,6 +138,60 @@ fn main() {
                 }
             }
         }
+
+        // GUI Buttons
+        let text = String::from("add point");
+        let mut start_offset_x = 0;
+        let start_offset_y = 0;
+
+        for i in text.chars() {
+            let letter : [[i32; 7]; 9];
+
+            if i == 'a' {
+                letter = font::A;
+            } else if i == 'd' {
+                letter = font::D;
+            } else if i == 'p' {
+                letter = font::P;
+            } else if i == 'o' {
+                letter = font::O;
+            } else if i == 'i' {
+                letter = font::I;
+            } else if i == 'n' {
+                letter = font::N;
+            } else if i == 't' {
+                letter = font::T;
+            } else if i == 'r' {
+                letter = font::R;
+            } else if i == 'e' {
+                letter = font::E;
+            } else if i == 'm' {
+                letter = font::M;
+            } else if i == 'v' {
+                letter = font::V;
+            } else {
+                letter = font::SPACE;
+            }
+
+            for y in 0..letter.len() {
+                for x in 0..letter[y].len() {
+                    if letter[y][x] == 1 {
+                        
+                        if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
+                            let index = (y * WIDTH) + x + start_offset_x;
+                            buffer[index] = red_color;
+                        }
+                    } else {
+                        if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
+                            let index = (y + start_offset_y * WIDTH) + x + start_offset_x;
+                            buffer[index] = black_colour;
+                        }    
+                    } 
+                }
+            }
+            start_offset_x += 8;
+        }
+        
 
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
