@@ -1,5 +1,5 @@
-use minifb::{Key, Window, WindowOptions, MouseMode, MouseButton};
 use crate::assets::font;
+use minifb::{Key, MouseButton, MouseMode, Window, WindowOptions};
 pub mod assets;
 
 const WIDTH: usize = 640;
@@ -26,7 +26,7 @@ fn main() {
     let mut y: usize;
 
     let mut mouse_pos: Vec<f32> = vec![0.0, 0.0];
-    
+
     // Define the color (Format: 0x00RRGGBB)
     let red_color = 0x00FF0000;
     let green_color = 0x0000FF00;
@@ -35,7 +35,14 @@ fn main() {
     let black_colour = 0x00000000;
 
     // Define the positions of the four control points for the Bezier curve
-    let mut circle_pos_arr: Vec<Vec<f32>> = vec![vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0], vec![10.0, 10.0]];
+    let mut circle_pos_arr: Vec<Vec<f32>> = vec![
+        vec![10.0, 10.0],
+        vec![10.0, 10.0],
+        vec![10.0, 10.0],
+        vec![10.0, 10.0],
+        vec![10.0, 10.0],
+        vec![10.0, 10.0],
+    ];
 
     let mut selected_circle: i32 = -1;
 
@@ -54,10 +61,8 @@ fn main() {
             mouse_pos[1] = mouse.1 as f32;
         });
 
-
         // resets the buffer to black
         buffer = vec![0; WIDTH * HEIGHT];
-
 
         // Draw lines between control points
         for i in 1..circle_pos_arr.len() {
@@ -65,9 +70,12 @@ fn main() {
             let mut t: f32;
 
             for j in 0..control_line_res {
-                t = j as f32/control_line_res as f32;
+                t = j as f32 / control_line_res as f32;
 
-                vec_pt = get_pt_of_nth_degree_bezier(&t, &vec![circle_pos_arr[i-1].clone(), circle_pos_arr[i].clone()]);
+                vec_pt = get_pt_of_nth_degree_bezier(
+                    &t,
+                    &vec![circle_pos_arr[i - 1].clone(), circle_pos_arr[i].clone()],
+                );
 
                 x = vec_pt[0] as usize;
                 y = vec_pt[1] as usize;
@@ -79,13 +87,12 @@ fn main() {
             }
         }
 
-
         let mut vec_pt: Vec<f32>;
         let mut t: f32;
 
         // Draw bezier curve
         for i in 0..bezier_resolution {
-            t = i as f32/bezier_resolution as f32;
+            t = i as f32 / bezier_resolution as f32;
 
             vec_pt = get_pt_of_nth_degree_bezier(&t, &circle_pos_arr);
 
@@ -97,7 +104,6 @@ fn main() {
                 buffer[index] = red_color;
             }
         }
-
 
         // only runs the code when the mouse is down
         if window.get_mouse_down(MouseButton::Left) {
@@ -119,7 +125,7 @@ fn main() {
 
         // Draw a circle around the mouse position
         let mut vec_pt_circle: Vec<f32>;
-        
+
         for i in 0..circle_pos_arr.len() {
             for angle in 1..360 {
                 let a = angle as f32;
@@ -145,38 +151,11 @@ fn main() {
         let start_offset_y = 0;
 
         for i in text.chars() {
-            let letter : [[i32; 7]; 9];
-
-            if i == 'a' {
-                letter = font::A;
-            } else if i == 'd' {
-                letter = font::D;
-            } else if i == 'p' {
-                letter = font::P;
-            } else if i == 'o' {
-                letter = font::O;
-            } else if i == 'i' {
-                letter = font::I;
-            } else if i == 'n' {
-                letter = font::N;
-            } else if i == 't' {
-                letter = font::T;
-            } else if i == 'r' {
-                letter = font::R;
-            } else if i == 'e' {
-                letter = font::E;
-            } else if i == 'm' {
-                letter = font::M;
-            } else if i == 'v' {
-                letter = font::V;
-            } else {
-                letter = font::SPACE;
-            }
+            let letter: [[i32; 7]; 9] = get_letter_glyph(i);
 
             for y in 0..letter.len() {
                 for x in 0..letter[y].len() {
                     if letter[y][x] == 1 {
-                        
                         if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
                             let index = (y * WIDTH) + x + start_offset_x;
                             buffer[index] = red_color;
@@ -185,48 +164,34 @@ fn main() {
                         if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
                             let index = (y + start_offset_y * WIDTH) + x + start_offset_x;
                             buffer[index] = black_colour;
-                        }    
-                    } 
+                        }
+                    }
                 }
             }
             start_offset_x += 8;
         }
-        
 
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
-        window
-            .update_with_buffer(&buffer, WIDTH, HEIGHT)
-            .unwrap();
+        window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
 }
 
-
-
-// fn get_bezier_curve_pt(t: &f32, pt0: &Vec<f32>, pt1: &Vec<f32>, pt2: &Vec<f32>, pt3: &Vec<f32>) -> Vec<f32> {
-//     let mut v_return = vec!(0.0, 0.0);
-
-//     v_return[0] = (1.0-t).powf(3.0)*pt0[0] + 3.0*(1.0-t).powf(2.0)*t*pt1[0] + 3.0*(1.0-t)*t.powf(2.0)*pt2[0] + t.powf(3.0)*pt3[0];
-//     v_return[1] = (1.0-t).powf(3.0)*pt0[1] + 3.0*(1.0-t).powf(2.0)*t*pt1[1] + 3.0*(1.0-t)*t.powf(2.0)*pt2[1] + t.powf(3.0)*pt3[1];
-
-//     return v_return
-// }
-
 fn get_circle_pt(theta: f32, radius: f32, pos: Vec<f32>) -> Vec<f32> {
-    let mut v_return = vec!(0.0, 0.0);
+    let mut v_return = vec![0.0, 0.0];
 
-    let angle_rad = theta * (3.141592653589/180.0);
+    let angle_rad = theta * (3.141592653589 / 180.0);
 
-    v_return[0] = pos[0] - radius*(angle_rad as f32).cos();
-    v_return[1] = pos[1] - radius*(angle_rad as f32).sin();
+    v_return[0] = pos[0] - radius * (angle_rad as f32).cos();
+    v_return[1] = pos[1] - radius * (angle_rad as f32).sin();
 
-    return v_return
+    return v_return;
 }
 
 fn is_pt_in_circle(pt: Vec<f32>, circle_pos_arr: Vec<f32>, radius: f32) -> bool {
     let dx = pt[0] - circle_pos_arr[0];
     let dy = pt[1] - circle_pos_arr[1];
 
-    return (dx*dx + dy*dy) <= radius*radius;
+    return (dx * dx + dy * dy) <= radius * radius;
 }
 
 fn get_pt_of_nth_degree_bezier(t: &f32, arr_pts: &Vec<Vec<f32>>) -> Vec<f32> {
@@ -241,7 +206,7 @@ fn get_pt_of_nth_degree_bezier(t: &f32, arr_pts: &Vec<Vec<f32>>) -> Vec<f32> {
         v_return[1] += basis * arr_pts[i][1];
     }
 
-    return v_return
+    return v_return;
 }
 
 fn factorial(n: u64) -> u64 {
@@ -250,4 +215,62 @@ fn factorial(n: u64) -> u64 {
 
 fn binomial_coefficient(n: u64, k: u64) -> u64 {
     return factorial(n) / (factorial(k) * factorial(n - k));
+}
+
+fn get_letter_glyph(c: char) -> [[i32; 7]; 9] {
+    if c == 'a' {
+        return font::A;
+    } else if c == 'b' {
+        return font::B;
+    } else if c == 'c' {
+        return font::C;
+    } else if c == 'd' {
+        return font::D;
+    } else if c == 'e' {
+        return font::E;
+    } else if c == 'f' {
+        return font::F;
+    } else if c == 'g' {
+        return font::G;
+    } else if c == 'h' {
+        return font::H;
+    } else if c == 'i' {
+        return font::I;
+    } else if c == 'j' {
+        return font::J;
+    } else if c == 'k' {
+        return font::K;
+    } else if c == 'l' {
+        return font::L;
+    } else if c == 'm' {
+        return font::M;
+    } else if c == 'n' {
+        return font::N;
+    } else if c == 'o' {
+        return font::O;
+    } else if c == 'p' {
+        return font::P;
+    } else if c == 'q' {
+        return font::Q;
+    } else if c == 'r' {
+        return font::R;
+    } else if c == 's' {
+        return font::S;
+    } else if c == 't' {
+        return font::T;
+    } else if c == 'u' {
+        return font::U;
+    } else if c == 'v' {
+        return font::V;
+    } else if c == 'w' {
+        return font::W;
+    } else if c == 'x' {
+        return font::X;
+    } else if c == 'y' {
+        return font::Y;
+    } else if c == 'z' {
+        return font::Z;
+    } else {
+        return font::SPACE;
+    }
 }
