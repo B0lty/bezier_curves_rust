@@ -34,7 +34,7 @@ fn main() {
     let light_grey_colour = 0x00888888;
     let button_bg_colour = 0x00222244;
 
-    // Define the positions of the four control points for the Bezier curve
+    // Define the positions of the starting control points for the Bezier curve
     let mut circle_pos_arr: Vec<Vec<f32>> = vec![
         vec![100.0, 100.0],
         vec![400.0, 100.0],
@@ -123,9 +123,10 @@ fn main() {
                 }
             }
 
-            // Detecting button presses, should be moved into a loop in the future
+            // Detecting button presses on buttons, should be moved into a loop in the future
             // Only allows the buttons to be pressed when a bezier point is not selected
-            if selected_circle == -1 {
+            // min pts = 2, max pts = 30
+            if (selected_circle == -1) {
                 if is_pt_in_rect(
                     mouse_pos.clone(),
                     vec![arr_buttons[0].0.clone(), arr_buttons[0].1.clone()],
@@ -133,7 +134,8 @@ fn main() {
                         (arr_buttons[0].2.len() * font::GLYPH_WIDTH - 1) as f32,
                         font::GLYPH_HEIGHT as f32,
                     ],
-                ) {
+                ) && (circle_pos_arr.len() + 1 <= 30)
+                {
                     if button_pressed == false {
                         let mut new_pt: Vec<Vec<f32>> = vec![vec![10.0, 10.0]];
                         circle_pos_arr.append(&mut new_pt);
@@ -146,7 +148,8 @@ fn main() {
                         (arr_buttons[1].2.len() * font::GLYPH_WIDTH - 1) as f32,
                         font::GLYPH_HEIGHT as f32,
                     ],
-                ) {
+                ) && (circle_pos_arr.len() > 3)
+                {
                     if button_pressed == false {
                         circle_pos_arr.pop();
                         button_pressed = true;
