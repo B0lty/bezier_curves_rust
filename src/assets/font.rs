@@ -1,3 +1,6 @@
+pub const GLYPH_HEIGHT: usize = 9;
+pub const GLYPH_WIDTH: usize = 7;
+
 pub const A: [[i32; 7]; 9] = [
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 1, 1, 1, 0, 0],
