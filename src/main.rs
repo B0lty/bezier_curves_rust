@@ -1,5 +1,6 @@
 use crate::assets::font;
 use minifb::{Key, MouseButton, MouseMode, Window, WindowOptions};
+use webbrowser;
 pub mod assets;
 
 const WIDTH: usize = 640;
@@ -55,6 +56,12 @@ fn main() {
             WIDTH as f32 - 107.0,
             30.0,
             String::from("remove point"),
+            3.0,
+        ),
+        (
+            WIDTH as f32 - 107.0,
+            HEIGHT as f32 - 18.0,
+            String::from("made by ewan c"),
             3.0,
         ),
     ];
@@ -126,7 +133,7 @@ fn main() {
             // Detecting button presses on buttons, should be moved into a loop in the future
             // Only allows the buttons to be pressed when a bezier point is not selected
             // min pts = 2, max pts = 30
-            if (selected_circle == -1) {
+            if selected_circle == -1 {
                 if is_pt_in_rect(
                     mouse_pos.clone(),
                     vec![arr_buttons[0].0.clone(), arr_buttons[0].1.clone()],
@@ -152,6 +159,20 @@ fn main() {
                 {
                     if button_pressed == false {
                         circle_pos_arr.pop();
+                        button_pressed = true;
+                    }
+                } else if is_pt_in_rect(
+                    mouse_pos.clone(),
+                    vec![arr_buttons[2].0.clone(), arr_buttons[2].1.clone()],
+                    vec![
+                        (arr_buttons[2].2.len() * font::GLYPH_WIDTH - 1) as f32,
+                        font::GLYPH_HEIGHT as f32,
+                    ],
+                ) {
+                    if button_pressed == false {
+                        if webbrowser::open("http://ewanc.uk").is_ok() {
+                            // ...
+                        }
                         button_pressed = true;
                     }
                 }
@@ -323,6 +344,8 @@ fn get_letter_glyph(c: char) -> [[i32; 7]; 9] {
         return font::Y;
     } else if c == 'z' {
         return font::Z;
+    } else if c == '.' {
+        return font::FULL_STOP;
     } else {
         return font::SPACE;
     }
