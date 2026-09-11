@@ -32,7 +32,6 @@ fn main() {
     let green_color = 0x0000FF00;
     let blue_color = 0x000000FF;
     let light_grey_colour = 0x00888888;
-    let black_colour = 0x00000000;
 
     // Define the positions of the four control points for the Bezier curve
     let mut circle_pos_arr: Vec<Vec<f32>> = vec![
@@ -147,8 +146,8 @@ fn main() {
 
         // GUI Buttons
         let text = String::from("add point");
-        let mut start_offset_x = 0;
-        let start_offset_y = 0;
+        let mut start_offset_x = WIDTH - text.len() * 8 + 1 - 50;
+        let start_offset_y = 50;
 
         for i in text.chars() {
             let letter: [[i32; 7]; 9] = get_letter_glyph(i);
@@ -159,11 +158,6 @@ fn main() {
                         if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
                             let index = (y * WIDTH) + x + start_offset_x;
                             buffer[index] = red_color;
-                        }
-                    } else {
-                        if x + start_offset_x < WIDTH && y + start_offset_y < HEIGHT {
-                            let index = (y + start_offset_y * WIDTH) + x + start_offset_x;
-                            buffer[index] = black_colour;
                         }
                     }
                 }
